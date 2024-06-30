@@ -1,0 +1,4 @@
+پیچیدگی کد:
+n = row of image
+m = colunm of image
+O( (n-2)*(m-2) * 9) = O (n * m)
