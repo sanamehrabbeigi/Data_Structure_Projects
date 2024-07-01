@@ -1,0 +1,92 @@
+#include<iostream>
+//#include<conio.h>
+#include<vector>
+
+using namespace std;
+
+vector <int> vec;
+
+typedef struct node {
+	int data;
+	struct node * right;
+	struct node * left;
+}node;
+
+node* head = NULL;
+
+void makeBst(int data)
+{
+	if (head == NULL)
+	{
+		node * newnode = (node*)malloc(sizeof(node));
+		newnode->left = NULL;
+		newnode->right = NULL;
+		newnode->data = data;
+		head = newnode;
+	}
+	else
+	{
+		node * temp = head;
+		while (1)
+		{
+			if (data <= temp->data)
+			{
+				if (temp->left == NULL)
+				{
+					node * newnode = (node*)malloc(sizeof(node));
+					newnode->left = NULL;
+					newnode->right = NULL;
+					newnode->data = data;
+					temp->left = newnode;
+					break;
+				}
+				temp = temp->left;
+			}
+			else
+			{
+				if (temp->right == NULL)
+				{
+					node * newnode = (node*)malloc(sizeof(node));
+					newnode->left = NULL;
+					newnode->right = NULL;
+					newnode->data = data;
+					temp->right = newnode;
+					break;
+				}
+				temp = temp->right;
+			}
+		}
+	}
+}
+void inOrderTravers(node * root)
+{
+	if (root == NULL)
+		return;
+	inOrderTravers(root->left);
+	vec.push_back(root->data);
+	inOrderTravers(root->right);
+}
+
+int main()
+{
+	int n, x, ans;
+	cin >> n;
+	for (int i = 0; i < n; i++)
+	{
+		cin >> x;
+		makeBst(x);
+	}
+	cin >> ans;
+	//cout << head->data << endl;
+	inOrderTravers(head);
+	for (int i = 0; i < vec.size(); i++)
+		for (int j = i+1; j < vec.size(); j++)
+		{
+			if (vec[i] + vec[j] == ans)
+				cout << vec[i] << " " << vec[j] << endl;
+			//cout << i << " " << j << " " << vec[i] << " " << vec[j] << endl;
+		}
+	//cin >> x;
+	return 0;
+	//getch();
+}

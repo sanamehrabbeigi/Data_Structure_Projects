@@ -1,0 +1,38 @@
+#include<iostream>
+//#include<conio.h>
+
+using namespace std;
+
+long long n, adj[1000][1000];
+bool check[1000];
+
+void dfs(int root)
+{
+	check[root] = 1;
+	for (int i = 0; i < n; i++)
+	{
+		if (adj[root][i] == 1 && check[i] == 0)
+			dfs(i);
+	}
+}
+
+int main()
+{
+	cin >> n;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			cin >> adj[i][j];
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+			check[j] = 0;
+		dfs(i);
+		int ans = 0;
+		for (int j = 0; j < n; j++)
+			if (check[j] == 1)
+				ans++;
+		cout << ans << " ";
+	}
+	return 0;
+//	getch();
+}

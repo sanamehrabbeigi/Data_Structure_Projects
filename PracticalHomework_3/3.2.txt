@@ -1,0 +1,104 @@
+#include<iostream>
+//#include<conio.h>
+#include<vector>
+#include<algorithm>
+#include <list> 
+#include <limits.h> 
+
+using namespace std;
+
+vector <pair<int, pair<int, int>>> vert;
+vector <int> ans;
+
+class Graph
+{
+	int V;
+	list<int> *adj;
+	bool isCyclicUtil(int v, bool visited[], int parent);
+public:
+	vector <pair<int, int>> e;
+	Graph(int V);
+	void addEdge(int v, int w);
+	bool isCyclic();
+};
+
+Graph::Graph(int V)
+{
+	this->V = V;
+	adj = new list<int>[V];
+}
+
+void Graph::addEdge(int v, int w)
+{
+	adj[v].push_back(w);
+	adj[w].push_back(v);
+	e.push_back(make_pair(v, w));
+}
+
+bool Graph::isCyclicUtil(int v, bool visited[], int parent)
+{
+	visited[v] = true;
+	list<int>::iterator i;
+	for (i = adj[v].begin(); i != adj[v].end(); ++i)
+	{
+		if (!visited[*i])
+		{
+			if (isCyclicUtil(*i, visited, v))
+				return true;
+		}
+		else if (*i != parent)
+			return true;
+	}
+	return false;
+}
+bool Graph::isCyclic()
+{
+	bool *visited = new bool[V];
+	for (int i = 0; i < V; i++)
+		visited[i] = false;
+	for (int u = 0; u < V; u++)
+		if (!visited[u])
+			if (isCyclicUtil(u, visited, -1))
+				return true;
+
+	return false;
+}
+int main()
+{
+	long long n, x;
+	cin >> n;
+
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+		{
+			cin >> x;
+			if (j < i && x != 0)
+				vert.push_back(make_pair(x, make_pair(i, j)));
+		}
+
+	sort(vert.begin(), vert.end());
+	Graph g1(n);
+	for (int i = 0; i < vert.size(); i++)
+	{
+		Graph g2(n);
+		for (int j = 0; j < g1.e.size(); j++)
+			g2.addEdge(g1.e[j].first, g1.e[j].second);
+		g2.addEdge(vert[i].second.first, vert[i].second.second);
+		if (!g2.isCyclic())
+		{
+			g1.addEdge(vert[i].second.first, vert[i].second.second);
+			ans.push_back(i);
+		}
+	}
+	long long a = 1;
+	cout << "Edge\tWeight\n";
+	for (int i = 0; i < ans.size(); i++)
+	{
+		cout << vert[ans[i]].second.second+1 << " - " << vert[ans[i]].second.first+1 << "\t" << vert[ans[i]].first << endl;
+		a *= vert[ans[i]].first;
+	}
+	cout <<"Minimum product is "<< a << endl;
+	//cin >> n;
+	//getch();
+	return 0;
+}
