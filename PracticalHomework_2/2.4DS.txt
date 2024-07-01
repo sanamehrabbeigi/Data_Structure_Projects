@@ -1,0 +1,336 @@
+#include <iostream>
+//#include <conio.h>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <stdio.h>
+#include <string.h>
+
+
+using namespace std;
+
+typedef struct node {
+	int start, end;
+	string name;
+	struct node* next, *previous;
+};
+
+node * a_root = NULL, *f_root = NULL, *a_last = NULL;
+
+int main()
+{
+	string s1, nameOfNode;
+	char c;
+	int size;
+	ifstream myfile;
+	myfile.open("in.txt");
+
+	int count = 0, type = 0;
+	long long n = 0;
+
+	while (myfile)
+	{
+		string s;
+		getline(myfile, s);
+		stringstream sst(s);
+		if (count == 0)
+			sst >> n;
+		else if (count == 1)
+		{
+			if (s[0] == 'b' && s[1] == 'e')
+				type = 1;
+			else if (s[0] == 'w' && s[1] == 'o')
+				type = 2;
+			else if (s[0] == 'f' && s[1] == 'i')
+				type = 3;
+		}
+		else if (s[0] == 'a')
+		{
+			string s1, nameOfNode;
+			long long size = 0;
+
+			s1 = s.substr(9, s.find(",") - 9);
+			stringstream sst(s1);
+			sst >> size;
+			nameOfNode = s.substr(s.find(",") + 1, s.find(")") - s.find(",") - 1);
+			node * newnode = (node *)malloc(sizeof(node));
+			newnode->next = NULL;
+			newnode->previous = NULL;
+			newnode->name = nameOfNode;
+
+			if (type == 1)
+			{
+				long long diff = 1000000;
+				node * nodeMax = NULL;
+				for (node * temp = f_root; temp != NULL; temp = temp->next)
+				{
+					if ((temp->end - temp->start + 1) - size <= diff && size <= (temp->end - temp->start + 1))
+					{
+						diff = temp->end - temp->start + 1 - size;
+						nodeMax = temp;
+					}
+				}
+				if ((nodeMax->end - nodeMax->start + 1) == size)
+				{
+					newnode->start = nodeMax->start;
+					newnode->end = nodeMax->end;
+					if (f_root == nodeMax)
+						f_root = nodeMax->next;
+					if (nodeMax->previous != NULL)
+						nodeMax->previous->next = nodeMax->next;
+					if (nodeMax->next != NULL)
+						nodeMax->next->previous = nodeMax->previous;
+					for (node * temp = a_root; temp != NULL; temp = temp->next)
+					{
+						if (newnode->end == temp->start - 1)
+						{
+							newnode->next = temp;
+							a_root = newnode;
+							break;
+						}
+						else if (newnode->start == temp->end + 1)
+						{
+							newnode->next = temp->next;
+							newnode->previous = temp;
+							break;
+						}
+					}
+				}
+				else
+				{
+					node * newFnode = (node *)malloc(sizeof(node));
+					newnode->start = nodeMax->start;
+					newnode->end = nodeMax->start + size - 1;
+					newFnode->start = nodeMax->start + size;
+					newFnode->end = nodeMax->end;
+					newFnode->name = "free";
+					if (f_root == nodeMax)
+						f_root = newFnode;
+					if (nodeMax->previous != NULL)
+						nodeMax->previous->next = newFnode;
+					if (nodeMax->next != NULL)
+						nodeMax->next->previous = newFnode;
+					for (node * temp = a_root; temp != NULL; temp = temp->next)
+					{
+						if (newnode->end == temp->start - 1)
+						{
+							newnode->next = temp;
+							a_root = newnode;
+							break;
+						}
+						else if (newnode->start == temp->end + 1)
+						{
+							newnode->next = temp->next;
+							newnode->previous = temp;
+							break;
+						}
+					}
+				}
+				if (a_root == NULL)
+					a_root = newnode;
+
+			}
+			else if (type == 2)
+			{
+				int sizeMax = size;
+				node * nodeMax = NULL;
+				for (node * temp = f_root; temp != NULL; temp = temp->next)
+				{
+					if ((temp->end - temp->start + 1) >= sizeMax)
+					{
+						sizeMax = temp->end - temp->start + 1;
+						nodeMax = temp;
+					}
+				}
+				if (sizeMax == size)
+				{
+					newnode->start = nodeMax->start;
+					newnode->end = nodeMax->end;
+					if (f_root == nodeMax)
+						f_root = nodeMax->next;
+					if (nodeMax->previous != NULL)
+						nodeMax->previous->next = nodeMax->next;
+					if (nodeMax->next != NULL)
+						nodeMax->next->previous = nodeMax->previous;
+					for (node * temp = a_root; temp != NULL; temp = temp->next)
+					{
+						if (newnode->end == temp->start - 1)
+						{
+							newnode->next = temp;
+							a_root = newnode;
+							break;
+						}
+						else if (newnode->start == temp->end + 1)
+						{
+							newnode->next = temp->next;
+							newnode->previous = temp;
+							break;
+						}
+					}
+				}
+				else
+				{
+					node * newFnode = (node *)malloc(sizeof(node));
+					newnode->start = nodeMax->start;
+					newnode->end = nodeMax->start + size - 1;
+					newFnode->start = nodeMax->start + size;
+					newFnode->end = nodeMax->end;
+					newFnode->name = "free";
+					if (f_root == nodeMax)
+						f_root = newFnode;
+					if (nodeMax->previous != NULL)
+						nodeMax->previous->next = newFnode;
+					if (nodeMax->next != NULL)
+						nodeMax->next->previous = newFnode;
+					for (node * temp = a_root; temp != NULL; temp = temp->next)
+					{
+						if (newnode->end == temp->start - 1)
+						{
+							newnode->next = temp;
+							a_root = newnode;
+							break;
+						}
+						else if (newnode->start == temp->end + 1)
+						{
+							newnode->next = temp->next;
+							newnode->previous = temp;
+							break;
+						}
+					}
+				}
+				if (a_root == NULL)
+					a_root = newnode;
+
+			}
+			else if (type == 3)
+			{
+				node * temp = f_root;
+				for (temp = f_root; temp != NULL; temp = temp->next)
+					if ((temp->end - temp->start + 1) >= size)
+						break;
+				if ((temp->end - temp->start + 1) == size)
+				{
+					newnode->start = temp->start;
+					newnode->end = temp->end;
+					if (f_root == temp)
+						f_root = temp->next;
+					if (temp->previous != NULL)
+						temp->previous->next = temp->next;
+					if (temp->next != NULL)
+						temp->next->previous = temp->previous;
+					for (node * temp1 = a_root; temp1 != NULL; temp1 = temp1->next)
+					{
+						if (newnode->end == temp1->start - 1)
+						{
+							newnode->next = temp1;
+							a_root = newnode;
+							break;
+						}
+						else if (newnode->start == temp1->end + 1)
+						{
+							newnode->next = temp1->next;
+							newnode->previous = temp1;
+							break;
+						}
+					}
+				}
+				else
+				{
+					node * newFnode = (node *)malloc(sizeof(node));
+					newnode->start = temp->start;
+					newnode->end = temp->start + size - 1;
+					newFnode->start = temp->start + size;
+					newFnode->end = temp->end;
+					newFnode->name = "free";
+					if (f_root == temp)
+						f_root = newFnode;
+					if (temp->previous != NULL)
+						temp->previous->next = newFnode;
+					if (temp->next != NULL)
+						temp->next->previous = newFnode;
+					for (node * temp = a_root; temp != NULL; temp = temp->next)
+					{
+						if (newnode->end == temp->start - 1)
+						{
+							newnode->next = temp;
+							a_root = newnode;
+							break;
+						}
+						else if (newnode->start == temp->end + 1)
+						{
+							newnode->next = temp->next;
+							newnode->previous = temp;
+							break;
+						}
+					}
+				}
+				if (a_root == NULL)
+					a_root = newnode;
+			}
+		}
+		else
+		{
+			string nameOfNode;
+			nameOfNode = s.substr(5, s.find(")") - 5);
+			node * temp = a_root;
+			for (temp = a_root; temp != NULL; temp = temp->next)
+			{
+				if (temp->name == nameOfNode)
+				{
+					if (f_root == temp)
+						f_root = temp->next;
+					if (temp->previous != NULL)
+						temp->previous->next = temp->next;
+					if (temp->next != NULL)
+						temp->next->previous = temp->previous;
+					break;
+				}
+			}
+			temp->name = "free";
+			for (node * temp1 = f_root; temp1 != NULL; temp1 = temp1->next)
+			{
+				if (temp->end == temp1->start - 1)
+				{
+					temp->next = temp1;
+					a_root = temp;
+					break;
+				}
+				else if (temp->start == temp1->end + 1)
+				{
+					temp->next = temp1->next;
+					temp->previous = temp1;
+					break;
+				}
+			}
+			if (f_root == NULL)
+				f_root = temp;
+			for (node * temp1 = f_root; temp1->next != NULL; temp1 = temp1->next)
+			{
+				while (temp->next != NULL && temp1->end == (temp1->next->start - 1))
+				{
+					temp1->end = temp1->next->end;
+					temp->next = temp->next->next;
+				}
+			}
+
+		}
+		count++;
+	}
+	myfile.close();
+
+	ofstream myfile2("out.txt");
+	myfile2 << "allocated:\n";
+	for (node * temp = a_root; temp != NULL; temp = temp->next)
+	{
+		myfile2 << temp->name << "(" << temp->start << "," << temp->end << ")\n";
+	}
+	myfile2 << "free:\n";
+	for (node * temp = f_root; temp != NULL; temp = temp->next)
+	{
+		myfile2 << temp->start << "-" << temp->end << "\n";
+	}
+	myfile2.close();
+	cin >> s1;
+	//	getch();
+	return 0;
+}
